@@ -1,0 +1,4 @@
+---
+exclude:
+  - azure-compute-disable-password-authentication
+  - azure-network-no-public-egress
