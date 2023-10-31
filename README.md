@@ -46,7 +46,7 @@ No modules.
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
-| <a name="input_admin_username"></a> [admin\_username](#input\_admin\_username) | admin user | `string` | `"admin_username"` | no |
+| <a name="input_admin_username"></a> [admin\_username](#input\_admin\_username) | admin user | `string` | n/a | yes |
 | <a name="input_vm_map"></a> [vm\_map](#input\_vm\_map) | n/a | <pre>map(object({<br>    name      = string<br>    size      = string<br>    publisher = string<br>    offer     = string<br>    sku       = string<br>    version   = string<br>  }))</pre> | <pre>{<br>  "vm1": {<br>    "name": "vm1",<br>    "offer": "UbuntuServer",<br>    "publisher": "Canonical",<br>    "size": "Standard_B2s",<br>    "sku": "18.04-LTS",<br>    "version": "latest"<br>  },<br>  "vm2": {<br>    "name": "vm2",<br>    "offer": "UbuntuServer",<br>    "publisher": "Canonical",<br>    "size": "Standard_B1s",<br>    "sku": "18.04-LTS",<br>    "version": "latest"<br>  }<br>}</pre> | no |
 | <a name="input_whitelist_ssh"></a> [whitelist\_ssh](#input\_whitelist\_ssh) | Local SSH IP range | `string` | n/a | yes |
 

@@ -33,7 +33,6 @@ variable "vm_map" {
 variable "admin_username" {
   type        = string
   description = "admin user"
-  default     = "admin_username"
 }
 
 variable "whitelist_ssh" {
