@@ -28,7 +28,7 @@ variable "vm_map" {
   }
 }
 
-# definim vm-urile pe care le dorim cu specificatiile lor in acest map pe care il vom parcurge ulterior cu for_each
+# define the vms in this map
 
 variable "admin_username" {
   type        = string

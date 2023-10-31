@@ -1,18 +1,18 @@
-resource "azurerm_virtual_network" "network1" { # crearea retelei virtuale, network1
+resource "azurerm_virtual_network" "network1" { # vnet creation
   name                = "network1"
   address_space       = ["10.0.0.0/28"]
   location            = azurerm_resource_group.rg1.location
   resource_group_name = azurerm_resource_group.rg1.name
 }
 
-resource "azurerm_subnet" "subnet1" { # crearea subnet-ului
+resource "azurerm_subnet" "subnet1" { # subnet creation
   name                 = "subnet1"
   resource_group_name  = azurerm_resource_group.rg1.name
   virtual_network_name = azurerm_virtual_network.network1.name
   address_prefixes     = ["10.0.0.0/29"]
 }
 
-resource "azurerm_network_interface" "nic" { # crearea network interface-urilor
+resource "azurerm_network_interface" "nic" { # network interface creation
   for_each            = var.vm_map
   name                = "${each.value.name}-nic"
   location            = azurerm_resource_group.rg1.location
@@ -26,7 +26,7 @@ resource "azurerm_network_interface" "nic" { # crearea network interface-urilor
   }
 }
 
-resource "azurerm_network_security_group" "allow_ssh_nsg" { # creare security group
+resource "azurerm_network_security_group" "allow_ssh_nsg" { # security group creation
   name                = "allow_ssh_nsg"
   location            = azurerm_resource_group.rg1.location
   resource_group_name = azurerm_resource_group.rg1.name
@@ -68,12 +68,12 @@ resource "azurerm_network_security_group" "allow_ssh_nsg" { # creare security gr
   }
 }
 
-resource "azurerm_subnet_network_security_group_association" "nsg_association" { # asociere security group cu subnet-ul
+resource "azurerm_subnet_network_security_group_association" "nsg_association" { # associate securtity group with subnet
   subnet_id                 = azurerm_subnet.subnet1.id
   network_security_group_id = azurerm_network_security_group.allow_ssh_nsg.id
 }
 
-resource "azurerm_public_ip" "public_ip" { # creare public ips
+resource "azurerm_public_ip" "public_ip" { # public ip creation
   for_each = var.vm_map
 
   name                = "public-ip-${each.key}"

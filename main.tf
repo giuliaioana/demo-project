@@ -1,15 +1,15 @@
-resource "azurerm_resource_group" "rg1" { # crearea resource group, rg1
+resource "azurerm_resource_group" "rg1" { # resource group creation
   name     = "rg1"
   location = "West Europe"
 }
 
-resource "random_password" "password" { # crearea de parole random cu anumite specificatii
+resource "random_password" "password" { # random password creation
   for_each = var.vm_map
   length   = 16
   special  = true
 }
 
-resource "azurerm_linux_virtual_machine" "vm" { # crearea vm-urilor
+resource "azurerm_linux_virtual_machine" "vm" { # vm creation
   for_each = var.vm_map
 
   name                = each.value.name
@@ -47,8 +47,8 @@ resource "null_resource" "ping_tests" {
   triggers = {
     source_instance_name = azurerm_linux_virtual_machine.vm[local.vm_list[count.index]].name                               # vm1.name
     target_instance_name = azurerm_linux_virtual_machine.vm[local.vm_list[(count.index + 1) % length(local.vm_list)]].name # vm2.name
-    # am folosit operatorul modulo pentru a ma asigura ca ultima masina din lista o sa poata sa dea ping la prima
-    # pentru ultimul index nu se mai poate calcula index + 1, prin urmare daca ultimul index = 1 => (1 + 1) % 2 = 2 % 2 = 0 => vm[1] o sa dea ping la vm[0]
+    # used modulo operator to ensure that the vm with the last index will be able to ping the first one
+    # for the last index we can't calculate index + 1 anymore, so for example, if the last index = 1 =>  (1 + 1) % 2 = 2 % 2 = 0 => vm[1] will ping vm[0]
     # always_run         = "${timestamp()}"
 
   }
@@ -59,17 +59,16 @@ resource "null_resource" "ping_tests" {
     password = azurerm_linux_virtual_machine.vm[local.vm_list[count.index]].admin_password
     host     = azurerm_linux_virtual_machine.vm[local.vm_list[count.index]].public_ip_address
   }
-  # pentru a putea da ping de pe o masina pe alta trebuie sa folosim remote exec si pentru a putea sa dam comanda de ping de pe o masina
-  # trebuie sa ne conectam prin ssh la masina respectiva - am dat ssh cu admin_username si cu parola
+  # to be able to ping a vm from another vm, we must use remote exec
 
   provisioner "remote-exec" {
     inline = [
       "ping -c 3 ${azurerm_linux_virtual_machine.vm[local.vm_list[(count.index + 1) % length(var.vm_map)]].private_ip_address} > /tmp/ping_output.txt"
     ]
-    # de pe vm1 ( index = 0 ) -> ping vm[vm_list[1]].private_ip = ping vm[vm2].private_ip > ping_output.txt
+    # from vm1 ( index = 0 ) -> ping vm[vm_list[1]].private_ip = ping vm[vm2].private_ip > ping_output.txt
   }
   provisioner "local-exec" {
     command = "sshpass -p '${azurerm_linux_virtual_machine.vm[local.vm_list[count.index]].admin_password}' scp -o StrictHostKeyChecking=no ${var.admin_username}@${azurerm_linux_virtual_machine.vm[local.vm_list[count.index]].public_ip_address}:/tmp/ping_output.txt ping_output_${local.vm_list[count.index]}.txt"
   }
-  # de pe local ne conectam prin ssh la fiecare masina si copiem cu scp admin_username@public_ip fiecare ping_output.txt pe care il vom numi ping_output_v1.txt si ping_output_v2.txt
+  # we connect using ssh to each vm and copy with scp each ping_output.txt
 }
